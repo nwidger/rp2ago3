@@ -27,7 +27,7 @@ func (mem *MappedMemory) AddMap(addresses []uint16, mmap m65go2.Memory) (error e
 }
 
 func (mem *MappedMemory) Reset() {
-	mem.maps = make(map[uint16]m65go2.Memory)
+	// don't clear mappings
 	mem.Memory.Reset()
 }
 
@@ -44,5 +44,5 @@ func (mem *MappedMemory) Store(address uint16, value uint8) (oldValue uint8) {
 		return mmap.Store(address, value)
 	}
 
-	return mem.Memory.Fetch(address)
+	return mem.Memory.Store(address, value)
 }
