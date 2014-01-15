@@ -33,17 +33,41 @@ func NewAPU(clock m65go2.Clocker) *APU {
 }
 
 func (apu *APU) Reset() {
+	for i := range apu.Registers.Pulse1 {
+		apu.Registers.Pulse1[i] = 0
+	}
 
+	for i := range apu.Registers.Pulse2 {
+		apu.Registers.Pulse2[i] = 0
+	}
+
+	for i := range apu.Registers.Triangle {
+		apu.Registers.Triangle[i] = 0
+	}
+
+	for i := range apu.Registers.Noise {
+		apu.Registers.Noise[i] = 0
+	}
+
+	for i := range apu.Registers.Dmc {
+		apu.Registers.Dmc[i] = 0
+	}
+
+	apu.Registers.Control = 0
+	apu.Registers.Status = 0
+	apu.Registers.FrameCounter = 0
 }
 
 func (apu *APU) Fetch(address uint16) (value uint8) {
+	value = 0
+
 	switch address {
 	// Status
 	case 0x4015:
 		value = uint8(apu.Registers.Status)
 	}
 
-	return 0
+	return
 }
 
 func (apu *APU) Store(address uint16, value uint8) (oldValue uint8) {
