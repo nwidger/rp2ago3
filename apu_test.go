@@ -14,7 +14,7 @@ func Setup() {
 	clock = m65go2.NewDivider(master, 12)
 	apu = NewAPU(clock)
 	apu.Reset()
-	go clock.Start()
+	clock.Start()
 }
 
 func Teardown() {

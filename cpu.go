@@ -17,6 +17,7 @@ type RP2A03 struct {
 func NewRP2A03(mem *MappedMemory, clock m65go2.Clocker, divisor uint64) *RP2A03 {
 	divider := m65go2.NewDivider(clock, divisor)
 	cpu := m65go2.NewM6502(mem, divider)
+	cpu.DisableDecimalMode()
 	apu := NewAPU(divider)
 
 	// APU memory maps
