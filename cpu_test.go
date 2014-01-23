@@ -7,7 +7,7 @@ import (
 
 func TestStore(t *testing.T) {
 	mem := NewMappedMemory(m65go2.NewBasicMemory())
-	clock := m65go2.NewClock(m65go2.NTSC_CLOCK_RATE)
+	clock := m65go2.NewClock(NTSC_CLOCK_RATE)
 	cpu := NewRP2A03(mem, clock, NTSC_CLOCK_DIVISOR)
 	cpu.Reset()
 	clock.Start()

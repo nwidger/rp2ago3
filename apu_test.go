@@ -10,7 +10,7 @@ var master *m65go2.Clock
 var clock *m65go2.Divider
 
 func Setup() {
-	master = m65go2.NewClock(m65go2.NTSC_CLOCK_RATE)
+	master = m65go2.NewClock(NTSC_CLOCK_RATE)
 	clock = m65go2.NewDivider(master, 12)
 	apu = NewAPU(clock)
 	apu.Reset()

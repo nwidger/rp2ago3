@@ -16,7 +16,7 @@ type MappedMemory struct {
 }
 
 func NewMappedMemory(base m65go2.Memory) *MappedMemory {
-	return &MappedMemory{maps: make(map[uint16]m65go2.Memory), Memory: base}
+	return &MappedMemory{maps: make(map[uint16]m65go2.Memory, 0xffff), Memory: base}
 }
 
 func (mem *MappedMemory) AddMappings(mappable MappableMemory) (err error) {

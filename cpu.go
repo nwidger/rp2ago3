@@ -2,7 +2,11 @@ package rp2ago3
 
 import (
 	"github.com/nwidger/m65go2"
+	"time"
 )
+
+const NTSC_CLOCK_RATE time.Duration = 46 * time.Nanosecond // 21.477272Mhz
+const PAL_CLOCK_RATE time.Duration = 37 * time.Nanosecond  // 26.601712MHz
 
 const NTSC_CLOCK_DIVISOR uint64 = 12
 const PAL_CLOCK_DIVISOR uint64 = 16
