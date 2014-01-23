@@ -5,6 +5,11 @@ import (
 	"github.com/nwidger/m65go2"
 )
 
+type MappableMemory interface {
+	m65go2.Memory
+	Mappings() []uint16
+}
+
 type MappedMemory struct {
 	maps map[uint16]m65go2.Memory
 	m65go2.Memory
@@ -14,16 +19,19 @@ func NewMappedMemory(base m65go2.Memory) *MappedMemory {
 	return &MappedMemory{maps: make(map[uint16]m65go2.Memory), Memory: base}
 }
 
-func (mem *MappedMemory) AddMap(addresses []uint16, mmap m65go2.Memory) (error error) {
+func (mem *MappedMemory) AddMappings(mappable MappableMemory) (err error) {
+	addresses := mappable.Mappings()
+
 	for _, address := range addresses {
 		if _, ok := mem.maps[address]; ok {
-			return errors.New("Address is already mapped")
+			err = errors.New("Address is already mapped")
+			return
 		}
 
-		mem.maps[address] = mmap
+		mem.maps[address] = mappable
 	}
 
-	return nil
+	return
 }
 
 func (mem *MappedMemory) Reset() {

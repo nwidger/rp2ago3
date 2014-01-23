@@ -21,12 +21,7 @@ func NewRP2A03(mem *MappedMemory, clock m65go2.Clocker, divisor uint64) *RP2A03 
 	apu := NewAPU(divider)
 
 	// APU memory maps
-	mem.AddMap([]uint16{
-		0x4000, 0x4001, 0x4002, 0x4003, 0x4004,
-		0x4005, 0x4006, 0x4007, 0x4008, 0x400a,
-		0x400b, 0x400c, 0x400e, 0x400f, 0x4010,
-		0x4011, 0x4012, 0x4013, 0x4015, 0x4017,
-	}, apu)
+	mem.AddMappings(apu)
 
 	return &RP2A03{memory: mem, M6502: cpu, APU: apu, clock: divider}
 }
