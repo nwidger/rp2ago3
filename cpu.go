@@ -8,8 +8,8 @@ import (
 const NTSC_CLOCK_RATE time.Duration = 46 * time.Nanosecond // 21.477272Mhz
 const PAL_CLOCK_RATE time.Duration = 37 * time.Nanosecond  // 26.601712MHz
 
-const NTSC_CLOCK_DIVISOR uint64 = 12
-const PAL_CLOCK_DIVISOR uint64 = 16
+const NTSC_CPU_CLOCK_DIVISOR uint64 = 12
+const PAL_CPU_CLOCK_DIVISOR uint64 = 16
 
 type RP2A03 struct {
 	*m65go2.M6502

@@ -7,28 +7,42 @@ import (
 
 type MappableMemory interface {
 	m65go2.Memory
-	Mappings() []uint16
+	Mappings() (fetch, store []uint16)
 }
 
 type MappedMemory struct {
-	maps map[uint16]m65go2.Memory
+	fetch map[uint16]m65go2.Memory
+	store map[uint16]m65go2.Memory
 	m65go2.Memory
 }
 
 func NewMappedMemory(base m65go2.Memory) *MappedMemory {
-	return &MappedMemory{maps: make(map[uint16]m65go2.Memory, 0xffff), Memory: base}
+	return &MappedMemory{
+		fetch:  make(map[uint16]m65go2.Memory, 0xffff),
+		store:  make(map[uint16]m65go2.Memory, 0xffff),
+		Memory: base,
+	}
 }
 
 func (mem *MappedMemory) AddMappings(mappable MappableMemory) (err error) {
-	addresses := mappable.Mappings()
+	fetch, store := mappable.Mappings()
 
-	for _, address := range addresses {
-		if _, ok := mem.maps[address]; ok {
-			err = errors.New("Address is already mapped")
+	for _, address := range fetch {
+		if _, ok := mem.fetch[address]; ok {
+			err = errors.New("Address is already mapped for fetch")
 			return
 		}
 
-		mem.maps[address] = mappable
+		mem.fetch[address] = mappable
+	}
+
+	for _, address := range store {
+		if _, ok := mem.store[address]; ok {
+			err = errors.New("Address is already mapped for store")
+			return
+		}
+
+		mem.store[address] = mappable
 	}
 
 	return
@@ -40,7 +54,7 @@ func (mem *MappedMemory) Reset() {
 }
 
 func (mem *MappedMemory) Fetch(address uint16) (value uint8) {
-	if mmap, ok := mem.maps[address]; ok {
+	if mmap, ok := mem.fetch[address]; ok {
 		return mmap.Fetch(address)
 	}
 
@@ -48,7 +62,7 @@ func (mem *MappedMemory) Fetch(address uint16) (value uint8) {
 }
 
 func (mem *MappedMemory) Store(address uint16, value uint8) (oldValue uint8) {
-	if mmap, ok := mem.maps[address]; ok {
+	if mmap, ok := mem.store[address]; ok {
 		return mmap.Store(address, value)
 	}
 
