@@ -15,7 +15,7 @@ type RP2A03 struct {
 	*m65go2.M6502
 	*APU
 	clock  *m65go2.Divider
-	memory *MappedMemory
+	Memory *MirroredMemory
 }
 
 func NewRP2A03(mem *MappedMemory, clock m65go2.Clocker, divisor uint64) *RP2A03 {
@@ -27,7 +27,17 @@ func NewRP2A03(mem *MappedMemory, clock m65go2.Clocker, divisor uint64) *RP2A03 
 	// APU memory maps
 	mem.AddMappings(apu)
 
-	return &RP2A03{memory: mem, M6502: cpu, APU: apu, clock: divider}
+	mirrored := NewMirroredMemory(mem)
+	mirrors := make(map[uint16]uint16)
+
+	// Mirrored 2KB internal RAM
+	for i := uint16(0x0800); i <= 0x1fff; i++ {
+		mirrors[i] = i % 0x0800
+	}
+
+	mirrored.AddMirrors(mirrors)
+
+	return &RP2A03{Memory: mirrored, M6502: cpu, APU: apu, clock: divider}
 }
 
 func (cpu *RP2A03) Reset() {

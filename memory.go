@@ -68,3 +68,49 @@ func (mem *MappedMemory) Store(address uint16, value uint8) (oldValue uint8) {
 
 	return mem.Memory.Store(address, value)
 }
+
+type MirroredMemory struct {
+	mirrors map[uint16]uint16
+	m65go2.Memory
+}
+
+func NewMirroredMemory(base m65go2.Memory) *MirroredMemory {
+	return &MirroredMemory{
+		Memory:  base,
+		mirrors: make(map[uint16]uint16),
+	}
+}
+
+func (mem *MirroredMemory) AddMirrors(mirrors map[uint16]uint16) (err error) {
+	for from, to := range mirrors {
+		if _, ok := mem.mirrors[from]; ok {
+			err = errors.New("Address is already mirrored")
+			break
+		}
+
+		mem.mirrors[from] = to
+	}
+
+	return
+}
+
+func (mem *MirroredMemory) Reset() {
+	// don't clear mappings
+	mem.Memory.Reset()
+}
+
+func (mem *MirroredMemory) Fetch(address uint16) (value uint8) {
+	if mirror, ok := mem.mirrors[address]; ok {
+		return mem.Fetch(mirror)
+	}
+
+	return mem.Memory.Fetch(address)
+}
+
+func (mem *MirroredMemory) Store(address uint16, value uint8) (oldValue uint8) {
+	if mirror, ok := mem.mirrors[address]; ok {
+		return mem.Store(mirror, value)
+	}
+
+	return mem.Memory.Store(address, value)
+}

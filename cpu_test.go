@@ -20,5 +20,17 @@ func TestStore(t *testing.T) {
 		t.Error("Register is not 0xff")
 	}
 
+	cpu.Memory.Store(0x0800, 0xff)
+
+	if cpu.Memory.Fetch(0x0000) != 0xff {
+		t.Error("Memory is not 0xff")
+	}
+
+	cpu.Memory.Store(0x0800, 0x00)
+
+	if cpu.Memory.Fetch(0x0000) != 0x00 {
+		t.Error("Memory is not 0x00")
+	}
+
 	clock.Stop()
 }
