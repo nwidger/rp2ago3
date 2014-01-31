@@ -2,6 +2,7 @@ package rp2ago3
 
 import (
 	"errors"
+	// "fmt"
 	"github.com/nwidger/m65go2"
 )
 
@@ -35,6 +36,11 @@ func NewMappedMemory(base m65go2.Memory) *MappedMemory {
 
 func (mem *MappedMemory) AddMirrors(mirrors map[uint16]uint16) (err error) {
 	for from, to := range mirrors {
+		if from == to {
+			err = errors.New("Address cannot be mirrored to itself")
+			break
+		}
+
 		if _, ok := mem.mirrors[from]; ok {
 			err = errors.New("Address is already mirrored")
 			break
@@ -75,10 +81,22 @@ func (mem *MappedMemory) Reset() {
 	mem.Memory.Reset()
 }
 
-func (mem *MappedMemory) Fetch(address uint16) (value uint8) {
-	if newAddress, ok := mem.mirrors[address]; ok {
-		address = newAddress
+func (mem *MappedMemory) mirror(address uint16) (newAddress uint16) {
+	newAddress = address
+
+	for {
+		if mapAddress, ok := mem.mirrors[newAddress]; !ok {
+			break
+		} else {
+			newAddress = mapAddress
+		}
 	}
+
+	return
+}
+
+func (mem *MappedMemory) Fetch(address uint16) (value uint8) {
+	address = mem.mirror(address)
 
 	if mmap, ok := mem.fetch[address]; ok {
 		return mmap.Fetch(address)
@@ -88,9 +106,7 @@ func (mem *MappedMemory) Fetch(address uint16) (value uint8) {
 }
 
 func (mem *MappedMemory) Store(address uint16, value uint8) (oldValue uint8) {
-	if newAddress, ok := mem.mirrors[address]; ok {
-		address = newAddress
-	}
+	address = mem.mirror(address)
 
 	if mmap, ok := mem.store[address]; ok {
 		return mmap.Store(address, value)
