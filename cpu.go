@@ -14,6 +14,7 @@ const PAL_CPU_CLOCK_DIVISOR uint64 = 16
 type RP2A03 struct {
 	*m65go2.M6502
 	*APU
+	dma    *DMA
 	clock  *m65go2.Divider
 	Memory *MappedMemory
 }
@@ -42,11 +43,17 @@ func NewRP2A03(clock m65go2.Clocker, divisor uint64) *RP2A03 {
 	// APU memory maps
 	mem.AddMappings(apu, CPU)
 
+	dma := NewDMA(mem, divider)
+
+	// DMA memory maps
+	mem.AddMappings(dma, CPU)
+
 	return &RP2A03{
 		Memory: mem,
 		M6502:  cpu,
 		APU:    apu,
 		clock:  divider,
+		dma:    dma,
 	}
 }
 
@@ -54,4 +61,16 @@ func (cpu *RP2A03) Reset() {
 	cpu.M6502.Reset()
 	cpu.APU.Reset()
 	cpu.Memory.Reset()
+}
+
+func (cpu *RP2A03) Run() (err error) {
+	for {
+		if _, err = cpu.Execute(); err != nil {
+			return
+		}
+
+		cpu.dma.PerformDMA()
+	}
+
+	return
 }
