@@ -20,7 +20,7 @@ type RP2A03 struct {
 }
 
 func NewRP2A03(clock m65go2.Clocker, divisor uint64) *RP2A03 {
-	mem := NewMappedMemory(m65go2.NewBasicMemory())
+	mem := NewMappedMemory(m65go2.NewBasicMemory(m65go2.DEFAULT_MEMORY_SIZE))
 	mirrors := make(map[uint16]uint16)
 
 	// Mirrored 2KB internal RAM
