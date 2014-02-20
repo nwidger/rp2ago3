@@ -2,7 +2,6 @@ package rp2ago3
 
 import (
 	"errors"
-	// "fmt"
 	"github.com/nwidger/m65go2"
 )
 
@@ -28,8 +27,8 @@ type MappedMemory struct {
 func NewMappedMemory(base m65go2.Memory) *MappedMemory {
 	return &MappedMemory{
 		mirrors: make(map[uint16]uint16),
-		fetch:   make(map[uint16]m65go2.Memory, 0xffff),
-		store:   make(map[uint16]m65go2.Memory, 0xffff),
+		fetch:   make(map[uint16]m65go2.Memory),
+		store:   make(map[uint16]m65go2.Memory),
 		Memory:  base,
 	}
 }
