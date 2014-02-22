@@ -5,11 +5,11 @@ import (
 	"time"
 )
 
-const NTSC_CLOCK_RATE time.Duration = 46 * time.Nanosecond // 21.477272Mhz
-const PAL_CLOCK_RATE time.Duration = 37 * time.Nanosecond  // 26.601712MHz
+const NTSC_CLOCK_RATE time.Duration = 187 * time.Nanosecond // 21.477272MHz / 4 = 5.369318MHz
+const PAL_CLOCK_RATE time.Duration = 187 * time.Nanosecond  // 26.601712MHz / 5 = 5.3203424MHz
 
-const NTSC_CPU_CLOCK_DIVISOR uint64 = 12
-const PAL_CPU_CLOCK_DIVISOR uint64 = 16
+const NTSC_CPU_CLOCK_DIVISOR uint64 = 3
+const PAL_CPU_CLOCK_DIVISOR uint64 = 4
 
 type RP2A03 struct {
 	*m65go2.M6502
