@@ -1,9 +1,5 @@
 package rp2ago3
 
-import (
-	"github.com/nwidger/m65go2"
-)
-
 type PulseChannel [4]uint8
 type TriangleChannel [3]uint8
 type NoiseChannel [3]uint8
@@ -24,12 +20,11 @@ type Registers struct {
 }
 
 type APU struct {
-	clock     m65go2.Clocker
 	Registers Registers
 }
 
-func NewAPU(clock m65go2.Clocker) *APU {
-	return &APU{clock: clock}
+func NewAPU() *APU {
+	return &APU{}
 }
 
 func (apu *APU) Reset() {

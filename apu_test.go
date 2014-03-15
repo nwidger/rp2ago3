@@ -1,24 +1,21 @@
 package rp2ago3
 
 import (
-	"github.com/nwidger/m65go2"
 	"testing"
+
+	"github.com/nwidger/m65go2"
 )
 
 var apu *APU
 var master *m65go2.Clock
-var clock *m65go2.Divider
 
 func Setup() {
-	master = m65go2.NewClock(NTSC_CLOCK_RATE)
-	clock = m65go2.NewDivider(master, 12)
-	apu = NewAPU(clock)
+	apu = NewAPU()
 	apu.Reset()
-	clock.Start()
 }
 
 func Teardown() {
-	clock.Stop()
+
 }
 
 func TestPulse1Channel(t *testing.T) {

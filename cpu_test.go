@@ -1,16 +1,10 @@
 package rp2ago3
 
-import (
-	"github.com/nwidger/m65go2"
-	"testing"
-	"time"
-)
+import "testing"
 
 func TestStore(t *testing.T) {
-	clock := m65go2.NewClock(1 * time.Nanosecond)
-	cpu := NewRP2A03(clock, 12)
+	cpu := NewRP2A03(NTSC_CPU_CLOCK_DIVISOR, nil)
 	cpu.Reset()
-	clock.Start()
 
 	cpu.APU.Registers.Pulse1[0] = 0xde
 	cpu.Memory.Store(0x4000, 0xff)
@@ -30,8 +24,6 @@ func TestStore(t *testing.T) {
 	if cpu.Memory.Fetch(0x0000) != 0x00 {
 		t.Error("Memory is not 0x00")
 	}
-
-	clock.Stop()
 }
 
 type FakePPU struct {
@@ -63,10 +55,8 @@ func (ppu *FakePPU) Store(address uint16, value uint8) (oldValue uint8) {
 }
 
 func TestDMA(t *testing.T) {
-	clock := m65go2.NewClock(1 * time.Nanosecond)
-	cpu := NewRP2A03(clock, 12)
+	cpu := NewRP2A03(NTSC_CPU_CLOCK_DIVISOR, nil)
 	ppu := &FakePPU{}
-	clock.Start()
 
 	cpu.Memory.AddMappings(ppu, CPU)
 

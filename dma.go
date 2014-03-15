@@ -6,31 +6,31 @@ import (
 
 type DMA struct {
 	Memory  m65go2.Memory
-	Clock   m65go2.Clocker
 	pending chan uint32
 }
 
-func NewDMA(memory m65go2.Memory, clock m65go2.Clocker) *DMA {
+func NewDMA(memory m65go2.Memory) *DMA {
 	return &DMA{
 		Memory:  memory,
-		Clock:   clock,
 		pending: make(chan uint32, 1),
 	}
 }
 
-func (dma *DMA) PerformDMA() {
+func (dma *DMA) PerformDMA() (cycles uint16) {
 	select {
 	case start := <-dma.pending:
-		ticks := dma.Clock.Ticks()
 		end := uint32(start + 0x0100)
 
 		for address := start; address < end; address++ {
 			dma.Memory.Store(0x2004, dma.Memory.Fetch(uint16(address)))
 		}
 
-		dma.Clock.Await(ticks + 513 + (ticks & 0x1))
+		cycles = 512
 	default:
+		cycles = 0
 	}
+
+	return
 }
 
 func (dma *DMA) Reset() {
