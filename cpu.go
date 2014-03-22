@@ -15,13 +15,11 @@ const PAL_CPU_CLOCK_DIVISOR uint16 = 4
 type RP2A03 struct {
 	*m65go2.M6502
 	*APU
-	dma     *DMA
-	Memory  *MappedMemory
-	divisor uint16
-	Cycles  chan uint16
+	dma    *DMA
+	Memory *MappedMemory
 }
 
-func NewRP2A03(divisor uint16, cycles chan uint16) *RP2A03 {
+func NewRP2A03() *RP2A03 {
 	mem := NewMappedMemory(m65go2.NewBasicMemory(m65go2.DEFAULT_MEMORY_SIZE))
 	mirrors := make(map[uint16]uint16)
 
@@ -37,7 +35,7 @@ func NewRP2A03(divisor uint16, cycles chan uint16) *RP2A03 {
 
 	mem.AddMirrors(mirrors)
 
-	cpu := m65go2.NewM6502(mem, cycles)
+	cpu := m65go2.NewM6502(mem)
 	cpu.DisableDecimalMode()
 	apu := NewAPU()
 
@@ -50,12 +48,10 @@ func NewRP2A03(divisor uint16, cycles chan uint16) *RP2A03 {
 	mem.AddMappings(dma, CPU)
 
 	return &RP2A03{
-		Memory:  mem,
-		M6502:   cpu,
-		APU:     apu,
-		dma:     dma,
-		divisor: divisor,
-		Cycles:  cycles,
+		Memory: mem,
+		M6502:  cpu,
+		APU:    apu,
+		dma:    dma,
 	}
 }
 
@@ -74,21 +70,15 @@ func (cpu *RP2A03) Run() (err error) {
 		}
 
 		if cpu.Cycles != nil && cycles != 0 {
-			// fmt.Printf("######## CPU: writing %v cycles to channel\n", cycles)
-			cpu.Cycles <- (cycles * cpu.divisor)
-			// fmt.Printf("######## CPU: waiting for done signal\n")
+			cpu.Cycles <- cycles
 			<-cpu.Cycles
-			// fmt.Printf("######## CPU: received done signal\n")
 		}
 
 		cycles = cpu.dma.PerformDMA()
 
 		if cpu.Cycles != nil && cycles != 0 {
-			// fmt.Printf("######## DMA: writing %v cycles to channel\n", cycles)
-			cpu.Cycles <- (cycles * cpu.divisor)
-			// fmt.Printf("######## DMA: waiting for done signal\n")
+			cpu.Cycles <- cycles
 			<-cpu.Cycles
-			// fmt.Printf("######## DMA: received done signal\n")
 		}
 	}
 
